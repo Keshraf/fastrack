@@ -21,8 +21,8 @@ const NavButton = ({ children, selected, path, collapsed, nav }: Props) => {
         className={cn(
           "flex h-9 w-full flex-row items-center justify-start gap-2 rounded-md px-2 text-base",
           selected
-            ? "bg-red-500 transition delay-75 ease-in"
-            : "text-[#C2C2C2] hover:bg-[#161616]",
+            ? "bg-blue-600 transition delay-75 ease-in text-blue-200"
+            : "hover:bg-[#161616] text-white/60",
           {
             "mx-auto w-min justify-between px-3": collapsed,
           }

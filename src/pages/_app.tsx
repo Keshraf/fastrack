@@ -3,6 +3,7 @@ import "@/styles/globals.css";
 import { MantineProvider } from "@mantine/core";
 import { NextPage } from "next";
 import type { AppProps } from "next/app";
+import { Inter } from "next/font/google";
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   sideNav?: boolean;
@@ -11,6 +12,11 @@ export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
 type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;
 };
+
+const inter = Inter({
+  subsets: ["latin-ext"],
+  variable: "--font-inter",
+});
 
 /* import { createPagesBrowserClient } from "@supabase/auth-helpers-nextjs";
 import { SessionContextProvider, Session } from "@supabase/auth-helpers-react";
@@ -38,17 +44,19 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
   const sideNav = Component.sideNav;
   return (
     <MantineProvider>
-      {sideNav ? (
-        <>
-          <Layout>
+      <main className={inter.variable}>
+        {sideNav ? (
+          <>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </>
+        ) : (
+          <>
             <Component {...pageProps} />
-          </Layout>
-        </>
-      ) : (
-        <>
-          <Component {...pageProps} />
-        </>
-      )}
+          </>
+        )}
+      </main>
     </MantineProvider>
   );
 }

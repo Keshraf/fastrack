@@ -119,7 +119,7 @@ const Navigation = ({ setCollapsed, collapsed, isSmallScreen }: Props) => {
                 path={`dashboard/${nav.path}`}
               >
                 {/* <svg fil */}
-                <Icon className="w-5 text-white stroke-white border-white opacity-100" />
+                <Icon className="w-5 " />
                 {!collapsed && nav.name}
               </NavButton>
             );
