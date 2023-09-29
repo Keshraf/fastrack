@@ -21,6 +21,7 @@ import {
   LuPackageCheck,
   LuMail,
   LuUsers2,
+  LuBookOpen,
 } from "react-icons/lu";
 
 type NavItem = {
@@ -63,6 +64,11 @@ const Navigation = ({ setCollapsed, collapsed, isSmallScreen }: Props) => {
         name: "Carriers",
         icon: LuUsers2,
         path: "carriers",
+      },
+      {
+        name: "Catalog",
+        icon: LuBookOpen,
+        path: "catalog",
       },
       {
         name: "Messages",
