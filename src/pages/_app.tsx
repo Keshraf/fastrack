@@ -1,6 +1,16 @@
+import Layout from "@/components/Layout";
 import "@/styles/globals.css";
 import { MantineProvider } from "@mantine/core";
+import { NextPage } from "next";
 import type { AppProps } from "next/app";
+
+export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
+  sideNav?: boolean;
+};
+
+type AppPropsWithLayout = AppProps & {
+  Component: NextPageWithLayout;
+};
 
 /* import { createPagesBrowserClient } from "@supabase/auth-helpers-nextjs";
 import { SessionContextProvider, Session } from "@supabase/auth-helpers-react";
@@ -24,10 +34,21 @@ function MyApp({
   );
 } */
 
-export default function App({ Component, pageProps }: AppProps) {
+export default function App({ Component, pageProps }: AppPropsWithLayout) {
+  const sideNav = Component.sideNav;
   return (
     <MantineProvider>
-      <Component {...pageProps} />
+      {sideNav ? (
+        <>
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </>
+      ) : (
+        <>
+          <Component {...pageProps} />
+        </>
+      )}
     </MantineProvider>
   );
 }
