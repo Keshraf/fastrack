@@ -1,6 +1,6 @@
 import FoodCard, { Food } from "@/components/Cards/Food";
 
-const calatag: Food[] = [
+const catalog: Food[] = [
   {
     name: "Burger",
     vegetarian: false,
@@ -162,7 +162,7 @@ const DashboardCatalog = () => {
       <h1 className="text-3xl font-bold text-center text-white-700">Catalog</h1>
       <h3 className="text-md text-center text-white/20">{"100 Items"}</h3>
       <section className="w-full py-6 grid grid-cols-4 grid-flow-row gap-4">
-        {calatag.map((food, index) => {
+        {catalog.map((food, index) => {
           return <FoodCard key={index} {...food} />;
         })}
       </section>

@@ -4,9 +4,17 @@ export type Food = {
   price: number;
   description: string;
   image: string;
+  buttonText?: string;
 };
 
-const FoodCard = ({ name, vegetarian, price, description, image }: Food) => {
+const FoodCard = ({
+  name,
+  vegetarian,
+  price,
+  description,
+  image,
+  buttonText = "Edit",
+}: Food) => {
   return (
     <div className="w-full rounded-xl p-3 border-[2px] border-[#121212]">
       <div
@@ -18,7 +26,7 @@ const FoodCard = ({ name, vegetarian, price, description, image }: Food) => {
       <div className="flex justify-between items-center w-full pt-3 pb-[2px]">
         <h2 className="text-xl font-bold">{name}</h2>
         <button className="bg-blue-400 rounded-md py-1 px-4 text-xs">
-          Edit
+          {buttonText}
         </button>
       </div>
 

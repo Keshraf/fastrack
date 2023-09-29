@@ -1,4 +1,5 @@
 import Layout from "@/components/Layout";
+import "@mantine/core/styles.css";
 import "@/styles/globals.css";
 import { MantineProvider } from "@mantine/core";
 import { NextPage } from "next";
