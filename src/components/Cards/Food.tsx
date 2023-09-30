@@ -1,6 +1,5 @@
 export type Food = {
   name: string;
-  vegetarian: boolean;
   price: number;
   description: string;
   image: string;
@@ -9,7 +8,6 @@ export type Food = {
 
 const FoodCard = ({
   name,
-  vegetarian,
   price,
   description,
   image,

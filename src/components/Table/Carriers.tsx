@@ -1,57 +1,13 @@
 import { cn } from "@/utils/cn";
 
 export type Carrier = {
-  carrierId: string;
+  id: string;
   name: string;
-  status: "Available" | "Delivery" | "Absent";
-  ordersCompleted: number;
-  address: string;
+  status: "available" | "out" | "absent";
+  completedorders: number;
 };
 
-const carriers: Carrier[] = [
-  {
-    carrierId: "1",
-    name: "Lindsay Walton",
-    status: "Available",
-    ordersCompleted: 100,
-    address: "123, Main Street, New York, USA",
-  },
-  {
-    carrierId: "2",
-    name: "Lindsay Walton",
-    status: "Available",
-
-    ordersCompleted: 100,
-    address: "123, Main Street, New York, USA",
-  },
-  {
-    carrierId: "2",
-    name: "Lindsay Walton",
-    status: "Available",
-
-    ordersCompleted: 100,
-    address: "123, Main Street, New York, USA",
-  },
-  {
-    carrierId: "2",
-    name: "Lindsay Walton",
-    status: "Available",
-
-    ordersCompleted: 100,
-    address: "123, Main Street, New York, USA",
-  },
-  {
-    carrierId: "2",
-    name: "Lindsay Walton",
-    status: "Available",
-
-    ordersCompleted: 100,
-    address: "123, Main Street, New York, USA",
-  },
-  // make 10 more of these
-];
-
-const CarriersTable = () => {
+const CarriersTable = ({ carriers }: { carriers: Carrier[] }) => {
   return (
     <div className="mt-8 flow-root">
       <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -102,22 +58,34 @@ const CarriersTable = () => {
                       "bg-[#121212] bg-opacity-75": index % 2 !== 0,
                       "bg-[#0D0D0D]": index % 2 !== 0,
                     })}
-                    key={carrier.carrierId}
+                    key={carrier.id}
                   >
                     <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-white/60 sm:pl-6">
-                      {carrier.carrierId}
+                      {carrier.id}
                     </td>
                     <td className="whitespace-nowrap py-4 pl-3 pr-3 text-sm text-white/40  sm:pl-3">
                       {carrier.name}
                     </td>
                     <td className="whitespace-nowrap py-4 pl-3 pr-3 text-sm text-white/40  sm:pl-3">
-                      {carrier.status}
+                      <span
+                        className={cn(
+                          "inline-flex items-center rounded-md bg-green-400 px-2 py-1 text-xs font-medium text-green-800 ring-1 ring-inset ring-green-600/20 w-20 h-6 justify-center",
+                          {
+                            "bg-green-400/70 text-green-800 ring-green-600/20":
+                              carrier.status === "available",
+                            "bg-orange-400/70 text-orange-800 ring-orange-600/20":
+                              carrier.status === "out",
+                            "bg-gray-400/70 text-gray-800 ring-gray-600/20":
+                              carrier.status === "absent",
+                          }
+                        )}
+                      >
+                        {carrier.status.charAt(0).toUpperCase() +
+                          carrier.status.slice(1)}
+                      </span>
                     </td>
                     <td className="whitespace-nowrap px-3 py-4 text-sm text-white/40">
-                      {carrier.ordersCompleted}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-white/40">
-                      {carrier.address}
+                      {carrier.completedorders}
                     </td>
                     <td
                       className={cn(
@@ -128,7 +96,7 @@ const CarriersTable = () => {
                       <button
                         type="button"
                         className="inline-flex items-center rounded-md bg-blue-500 px-2.5 py-1.5 text-sm font-semibold text-blue-300 shadow-sm ring-1 ring-inset  hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-30"
-                        disabled={carrier.status === "Absent"}
+                        disabled={carrier.status !== "out"}
                       >
                         Track
                         {/* <span className="sr-only">, {plan.name}</span> */}

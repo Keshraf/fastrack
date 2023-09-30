@@ -1,133 +1,39 @@
 import FoodCard, { type Food } from "@/components/Cards/Food";
-import { Drawer, Input, Modal } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
+import LoadingPage from "@/components/Loading";
+import useGetItems from "@/hooks/useGetItems";
+import { Autocomplete, Modal } from "@mantine/core";
 import { useState } from "react";
-
-const catalog: Food[] = [
-  {
-    name: "Burger",
-    vegetarian: false,
-    price: 100,
-    description:
-      "It is a very good burger. It is made using the best ingredients.",
-    image:
-      "https://www.thecookierookie.com/wp-content/uploads/2023/04/featured-stovetop-burgers-recipe.jpg",
-    buttonText: "Add",
-  },
-  {
-    name: "Burger",
-    vegetarian: false,
-    price: 100,
-    description:
-      "It is a very good burger. It is made using the best ingredients.",
-    image:
-      "https://www.thecookierookie.com/wp-content/uploads/2023/04/featured-stovetop-burgers-recipe.jpg",
-    buttonText: "Add",
-  },
-  {
-    name: "Burger",
-    vegetarian: false,
-    price: 100,
-    description:
-      "It is a very good burger. It is made using the best ingredients.",
-    image:
-      "https://www.thecookierookie.com/wp-content/uploads/2023/04/featured-stovetop-burgers-recipe.jpg",
-    buttonText: "Add",
-  },
-  {
-    name: "Burger",
-    vegetarian: false,
-    price: 100,
-    description:
-      "It is a very good burger. It is made using the best ingredients.",
-    image:
-      "https://www.thecookierookie.com/wp-content/uploads/2023/04/featured-stovetop-burgers-recipe.jpg",
-    buttonText: "Add",
-  },
-  {
-    name: "Burger",
-    vegetarian: false,
-    price: 100,
-    description:
-      "It is a very good burger. It is made using the best ingredients.",
-    image:
-      "https://www.thecookierookie.com/wp-content/uploads/2023/04/featured-stovetop-burgers-recipe.jpg",
-    buttonText: "Add",
-  },
-  {
-    name: "Burger",
-    vegetarian: false,
-    price: 100,
-    description:
-      "It is a very good burger. It is made using the best ingredients.",
-    image:
-      "https://www.thecookierookie.com/wp-content/uploads/2023/04/featured-stovetop-burgers-recipe.jpg",
-    buttonText: "Add",
-  },
-  {
-    name: "Burger",
-    vegetarian: false,
-    price: 100,
-    description:
-      "It is a very good burger. It is made using the best ingredients.",
-    image:
-      "https://www.thecookierookie.com/wp-content/uploads/2023/04/featured-stovetop-burgers-recipe.jpg",
-    buttonText: "Add",
-  },
-  {
-    name: "Burger",
-    vegetarian: false,
-    price: 100,
-    description:
-      "It is a very good burger. It is made using the best ingredients.",
-    image:
-      "https://www.thecookierookie.com/wp-content/uploads/2023/04/featured-stovetop-burgers-recipe.jpg",
-    buttonText: "Add",
-  },
-  {
-    name: "Burger",
-    vegetarian: false,
-    price: 100,
-    description:
-      "It is a very good burger. It is made using the best ingredients.",
-    image:
-      "https://www.thecookierookie.com/wp-content/uploads/2023/04/featured-stovetop-burgers-recipe.jpg",
-    buttonText: "Add",
-  },
-  {
-    name: "Burger",
-    vegetarian: false,
-    price: 100,
-    description:
-      "It is a very good burger. It is made using the best ingredients.",
-    image:
-      "https://www.thecookierookie.com/wp-content/uploads/2023/04/featured-stovetop-burgers-recipe.jpg",
-    buttonText: "Add",
-  },
-  {
-    name: "Burger",
-    vegetarian: false,
-    price: 100,
-    description:
-      "It is a very good burger. It is made using the best ingredients.",
-    image:
-      "https://www.thecookierookie.com/wp-content/uploads/2023/04/featured-stovetop-burgers-recipe.jpg",
-    buttonText: "Add",
-  },
-  {
-    name: "Burger",
-    vegetarian: false,
-    price: 100,
-    description:
-      "It is a very good burger. It is made using the best ingredients.",
-    image:
-      "https://www.thecookierookie.com/wp-content/uploads/2023/04/featured-stovetop-burgers-recipe.jpg",
-    buttonText: "Add",
-  },
-];
+import axios from "axios";
 
 const CustomerOrderPage = () => {
   const [opened, setOpened] = useState(false);
+  const { data, isLoading, isError } = useGetItems();
+  const [results, setResults] = useState([]);
+  const [search, setSearch] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+
+  if (isLoading) return <LoadingPage />;
+
+  const catalog = data?.response?.items.map((item: any) => {
+    return {
+      buttonText: "Add",
+      ...item,
+    };
+  });
+
+  const searchPlace = async (q: string) => {
+    try {
+      const apiKey = "AIzaSyBWMO-CIoZ5abEx8iqh9NOtzQ1zF_w3z-M";
+      const response = await axios({
+        method: "get",
+        url: `http://localhost:3000/api/searchPlace?q=${q}`,
+      });
+      setResults(response.data.map((place: any) => place.formatted_address));
+    } catch (error) {
+      console.error("Error searching for place", error);
+    }
+  };
 
   return (
     <>
@@ -155,24 +61,70 @@ const CustomerOrderPage = () => {
               id="name"
               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 bg-[#1e1e1e] text-white/70 px-3"
               placeholder="John Doe"
+              onChange={(e) => setName(e.target.value)}
             />
           </div>
         </div>
         <div className="mt-4">
           <label
-            htmlFor="mobile"
+            htmlFor="email"
             className="block text-sm font-medium leading-6 text-white/70"
           >
-            Phone Number
+            Email Address
           </label>
           <div className="mt-2">
             <input
-              type="tel"
-              name="mobile"
-              id="mobile"
+              type="email"
+              name="email"
+              id="email"
               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 bg-[#1e1e1e] text-white/70 px-3"
-              placeholder="+1 123 456 7890"
+              placeholder="example@gmail.com"
+              onChange={(e) => setEmail(e.target.value)}
             />
+          </div>
+          <div className="mt-2">
+            <label
+              htmlFor="address"
+              className="block text-sm font-medium leading-6 text-white/70"
+            >
+              Address
+            </label>
+            <div className="mt-2">
+              <Autocomplete
+                type="text"
+                name="address"
+                id="address"
+                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 bg-[#1e1e1e] text-white/70 px-3"
+                placeholder="Search"
+                onChange={(value) => {
+                  searchPlace(value);
+                  setSearch(value);
+                }}
+                data={results}
+                styles={{
+                  input: {
+                    backgroundColor: "#1e1e1e",
+                    color: "white",
+                    border: "none",
+                  },
+                  dropdown: {
+                    backgroundColor: "#1e1e1e",
+                    color: "white",
+                    border: "none",
+                  },
+                  option: {
+                    backgroundColor: "#1e1e1e",
+                    color: "white",
+                    border: "none",
+                  },
+                  options: {
+                    backgroundColor: "#1e1e1e",
+                    color: "white",
+                    border: "none",
+                  },
+                }}
+              />
+            </div>
           </div>
           <div className="w-full flex flex-col justify-start items-start mt-6">
             <h3 className="font-semibold text-xl text-blue-400">
@@ -212,7 +164,7 @@ const CustomerOrderPage = () => {
           </button>
         </div>
         <section className="w-full py-6 grid grid-cols-4 grid-flow-row gap-4">
-          {catalog.map((food, index) => {
+          {catalog.map((food: Food, index: number) => {
             return <FoodCard key={index} {...food} />;
           })}
         </section>
