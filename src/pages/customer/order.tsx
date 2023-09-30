@@ -5,6 +5,13 @@ import { Autocomplete, Modal } from "@mantine/core";
 import { useState } from "react";
 import axios from "axios";
 
+type Item = {
+  id: number;
+  name: string;
+  quantity: number;
+  price: number;
+};
+
 const CustomerOrderPage = () => {
   const [opened, setOpened] = useState(false);
   const { data, isLoading, isError } = useGetItems();
@@ -12,6 +19,7 @@ const CustomerOrderPage = () => {
   const [search, setSearch] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [items, setItems] = useState<Item[]>([]); // [{id: 1, quantity: 2}, {id: 2, quantity: 3}]
 
   if (isLoading) return <LoadingPage />;
 
@@ -34,6 +42,23 @@ const CustomerOrderPage = () => {
       console.error("Error searching for place", error);
     }
   };
+
+  const addItems = (id: number) => {
+    console.log(items);
+    const item = items.find((item) => item.id === id);
+    const info = catalog.find((item: Food) => item.id === id);
+    if (item) {
+      item.quantity += 1;
+      setItems([...items]);
+    } else {
+      setItems([
+        ...items,
+        { id, quantity: 1, price: info.price, name: info.name },
+      ]);
+    }
+  };
+
+  const placeOrder = async (name: string, email: string, items: Item[]) => {};
 
   return (
     <>
@@ -131,23 +156,31 @@ const CustomerOrderPage = () => {
               Order Summary
             </h3>
             <ol className="list-decimal list-inside w-full divide-y-[1px] divide-slate-800 flex flex-col">
-              <li className="w-full justify-between flex py-1">
-                Pizza <span className="text-right text-white/40">2</span>
-              </li>
-              <li className="w-full justify-between flex py-1">
-                Burger <span className="text-right text-white/40">2</span>
-              </li>
-              <li className="w-full justify-between flex py-1">
-                Fries <span className="text-right text-white/40">2</span>
-              </li>
+              {items.map((item) => {
+                return (
+                  <li
+                    className="w-full justify-between flex py-1"
+                    key={item.id}
+                  >
+                    {catalog.find((a: Food) => a.id === item.id).name}{" "}
+                    <span className="text-right text-white/40">
+                      {item.quantity} X {item.price}
+                    </span>
+                  </li>
+                );
+              })}
             </ol>
           </div>
           <h3 className="font-semibold text-xl text-blue-400 my-2">
-            Total Cost: $123
+            Total Cost: ${items.reduce((a, b) => a + b.price * b.quantity, 0)}
           </h3>
           <button
             type="button"
             className="rounded-md bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 w-full mt-6 mb-3"
+            onClick={() => {
+              placeOrder(name, email, items);
+              setOpened(false);
+            }}
           >
             {"Place Order"}
           </button>
@@ -165,7 +198,7 @@ const CustomerOrderPage = () => {
         </div>
         <section className="w-full py-6 grid grid-cols-4 grid-flow-row gap-4">
           {catalog.map((food: Food, index: number) => {
-            return <FoodCard key={index} {...food} />;
+            return <FoodCard key={index} {...food} onClick={addItems} />;
           })}
         </section>
       </div>

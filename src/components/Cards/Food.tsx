@@ -1,17 +1,21 @@
 export type Food = {
+  id: number;
   name: string;
   price: number;
   description: string;
   image: string;
   buttonText?: string;
+  onClick?: (id: number) => void;
 };
 
 const FoodCard = ({
+  id,
   name,
   price,
   description,
   image,
   buttonText = "Edit",
+  onClick,
 }: Food) => {
   return (
     <div className="w-full rounded-xl p-3 border-[2px] border-[#121212]">
@@ -23,7 +27,10 @@ const FoodCard = ({
       ></div>
       <div className="flex justify-between items-center w-full pt-3 pb-[2px]">
         <h2 className="text-xl font-bold">{name}</h2>
-        <button className="bg-blue-400 rounded-md py-1 px-4 text-xs">
+        <button
+          className="bg-blue-400 rounded-md py-1 px-4 text-xs"
+          onClick={() => onClick && onClick(id)}
+        >
           {buttonText}
         </button>
       </div>
