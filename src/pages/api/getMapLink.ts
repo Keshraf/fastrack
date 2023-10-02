@@ -1,5 +1,3 @@
-// https://maps.googleapis.com/maps/api/place/details/json?place_id=ChIJAflLrd92AjoRyE1aOg43vvs&fields=url&key=AIzaSyBWMO-CIoZ5abEx8iqh9NOtzQ1zF_w3z-M
-
 import axios from "axios";
 import type { NextApiRequest, NextApiResponse } from "next";
 
