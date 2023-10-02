@@ -4,6 +4,7 @@ import useGetItems from "@/hooks/useGetItems";
 import { Autocomplete, Modal } from "@mantine/core";
 import { useState } from "react";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 type Item = {
   id: number;
@@ -12,10 +13,16 @@ type Item = {
   price: number;
 };
 
+type Result = {
+  value: string;
+  id: string;
+};
+
 const CustomerOrderPage = () => {
   const [opened, setOpened] = useState(false);
   const { data, isLoading, isError } = useGetItems();
-  const [results, setResults] = useState([]);
+  const [results, setResults] = useState<Result[]>([]);
+  const [choice, setChoice] = useState<Result>();
   const [search, setSearch] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -32,12 +39,20 @@ const CustomerOrderPage = () => {
 
   const searchPlace = async (q: string) => {
     try {
-      const apiKey = "AIzaSyBWMO-CIoZ5abEx8iqh9NOtzQ1zF_w3z-M";
       const response = await axios({
         method: "get",
         url: `http://localhost:3000/api/searchPlace?q=${q}`,
       });
-      setResults(response.data.map((place: any) => place.formatted_address));
+
+      console.log(response.data.predictions);
+      setResults(
+        response.data.predictions.map((place: any) => {
+          return {
+            value: place.description,
+            id: place.place_id,
+          };
+        })
+      );
     } catch (error) {
       console.error("Error searching for place", error);
     }
@@ -58,7 +73,56 @@ const CustomerOrderPage = () => {
     }
   };
 
-  const placeOrder = async (name: string, email: string, items: Item[]) => {};
+  const getMap = async (id: string) => {
+    try {
+      const response = await axios({
+        method: "get",
+        url: `http://localhost:3000/api/getMapLink?q=${id}`,
+      });
+
+      console.log(response.data);
+
+      return response.data.result.url;
+    } catch (error) {
+      console.error("Error searching for place", error);
+    }
+  };
+
+  const placeOrder = async () => {
+    console.log(name, email, items, choice);
+
+    if (!name || !email || !items || !choice) {
+      toast.error("Please fill all the fields!");
+      return;
+    }
+
+    const finalItems: number[] = items
+      .map((item) => new Array(item.quantity).fill(item.id))
+      .flat();
+
+    const map: string = await getMap(choice.id);
+
+    await axios({
+      method: "post",
+      url: "https://civilian-blue.cmd.outerbase.io/place-order",
+      data: {
+        customerName: name,
+        customerAddress: choice?.value,
+        items: finalItems,
+        amount: items.reduce((a, b) => a + b.price * b.quantity, 0).toFixed(2),
+        customerEmail: email,
+        map,
+        status: "pending",
+      },
+    })
+      .then((res) => {
+        toast.success("Order placed successfully!");
+        setOpened(false);
+      })
+      .catch((err) => {
+        toast.error("Error placing order!");
+      });
+  };
 
   return (
     <>
@@ -125,7 +189,10 @@ const CustomerOrderPage = () => {
                   searchPlace(value);
                   setSearch(value);
                 }}
-                data={results}
+                onOptionSubmit={(value) => {
+                  setChoice(results.find((result) => result.value === value));
+                }}
+                data={results.map((result) => result.value)}
                 styles={{
                   input: {
                     backgroundColor: "#1e1e1e",
@@ -178,8 +245,7 @@ const CustomerOrderPage = () => {
             type="button"
             className="rounded-md bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 w-full mt-6 mb-3"
             onClick={() => {
-              placeOrder(name, email, items);
-              setOpened(false);
+              placeOrder();
             }}
           >
             {"Place Order"}

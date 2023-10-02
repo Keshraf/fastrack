@@ -5,6 +5,7 @@ import { MantineProvider } from "@mantine/core";
 import { NextPage } from "next";
 import type { AppProps } from "next/app";
 import { Inter } from "next/font/google";
+import { Toaster } from "react-hot-toast";
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   sideNav?: boolean;
@@ -44,20 +45,23 @@ function MyApp({
 export default function App({ Component, pageProps }: AppPropsWithLayout) {
   const sideNav = Component.sideNav;
   return (
-    <MantineProvider>
-      <main className={inter.variable}>
-        {sideNav ? (
-          <>
-            <Layout>
+    <>
+      <Toaster position="top-center" />
+      <MantineProvider>
+        <main className={inter.variable}>
+          {sideNav ? (
+            <>
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+            </>
+          ) : (
+            <>
               <Component {...pageProps} />
-            </Layout>
-          </>
-        ) : (
-          <>
-            <Component {...pageProps} />
-          </>
-        )}
-      </main>
-    </MantineProvider>
+            </>
+          )}
+        </main>
+      </MantineProvider>
+    </>
   );
 }
