@@ -2,18 +2,64 @@ import CardHeading from "@/components/Cards/Heading";
 import Stats, { type Stat } from "@/components/Cards/Stats";
 import ChartLine from "@/components/Charts/Line";
 import Feed from "@/components/Feed";
+import LoadingPage from "@/components/Loading";
+import useGetCarriers from "@/hooks/useGetCarriers";
+import useGetOrders from "@/hooks/useGetOrders";
 
 const DashboardHome = () => {
+  const {
+    data: ordersData,
+    isLoading: isLoadingOrders,
+    isError: isErrorOrders,
+  } = useGetOrders();
+
+  const {
+    data: carriersData,
+    isLoading: isLoadingCarriers,
+    isError: isErrorCarriers,
+  } = useGetCarriers();
+
+  if (isLoadingOrders || isLoadingCarriers) return <LoadingPage />;
+
+  const orders = ordersData?.response?.items;
+  const carriers = carriersData?.response?.items;
+
   const orderStats: Stat[] = [
-    { name: "Pending", value: "405" },
-    { name: "In-Progress", value: "365" },
-    { name: "Completed", value: "300" },
+    {
+      name: "Pending",
+      value: orders?.filter((order: any) => order.status === "pending").length,
+    },
+    {
+      name: "In-Progress",
+      value: orders?.filter((order: any) => order.status === "in-progress")
+        .length,
+    },
+    {
+      name: "Completed",
+      value: orders?.filter((order: any) => order.status === "completed")
+        .length,
+    },
   ];
   const personnelStats: Stat[] = [
-    { name: "Absent", value: "20" },
-    { name: "Available", value: "200" },
-    { name: "Delivery", value: "500" },
+    {
+      name: "Absent",
+      value: carriers?.filter((carrier: any) => carrier.status === "absent")
+        .length,
+    },
+    {
+      name: "Available",
+      value: carriers?.filter((carrier: any) => carrier.status === "available")
+        .length,
+    },
+    {
+      name: "Out",
+      value: carriers?.filter((carrier: any) => carrier.status === "out")
+        .length,
+    },
   ];
+
+  console.log(orders);
+
   return (
     <section className="flex flex-col items-start justify-start w-full h-screen p-9 overflow-y-auto">
       <h1 className="text-3xl font-bold text-center text-white-700">
@@ -35,7 +81,7 @@ const DashboardHome = () => {
         </div>
         <div className="col-span-4 flex flex-col gap-4">
           <CardHeading text="Insights" />
-          <ChartLine />
+          <ChartLine orders={orders} />
         </div>
         <div className="col-span-2 flex flex-col gap-4">
           <CardHeading text="Order Feed" />

@@ -70,7 +70,7 @@ const Navigation = ({ setCollapsed, collapsed, isSmallScreen }: Props) => {
         icon: LuBookOpen,
         path: "catalog",
       },
-      {
+      /*       {
         name: "Messages",
         icon: LuMail,
         path: "messages",
@@ -79,7 +79,7 @@ const Navigation = ({ setCollapsed, collapsed, isSmallScreen }: Props) => {
         name: "Map",
         icon: LuNavigation,
         path: "map",
-      },
+      }, */
     ],
     []
   );
@@ -110,7 +110,7 @@ const Navigation = ({ setCollapsed, collapsed, isSmallScreen }: Props) => {
           </div>
         )}
 
-        <div className="relative flex w-full flex-col items-center gap-6 px-5 mt-24">
+        <div className="relative flex w-full flex-col items-center gap-6 px-6 mt-4">
           {navs.map((nav, idx) => {
             const Icon = nav.icon;
             let selected = false;
