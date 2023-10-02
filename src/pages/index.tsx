@@ -21,6 +21,7 @@ export default function Home() {
           <div className="flex lg:flex-1">
             <a href="#" className="-m-1.5 p-1.5">
               <span className="sr-only">Fastrack</span>
+              {/*  */}
               <img className="h-8 w-auto" src="/vuetify.svg" alt="" />
             </a>
           </div>
