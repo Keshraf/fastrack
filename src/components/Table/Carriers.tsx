@@ -1,4 +1,8 @@
+import useGetOrders from "@/hooks/useGetOrders";
 import { cn } from "@/utils/cn";
+import LoadingPage from "../Loading";
+import Link from "next/link";
+import { Badge } from "@mantine/core";
 
 export type Carrier = {
   id: string;
@@ -8,6 +12,23 @@ export type Carrier = {
 };
 
 const CarriersTable = ({ carriers }: { carriers: Carrier[] }) => {
+  const { data, isLoading, isError } = useGetOrders();
+
+  if (isLoading) return <LoadingPage />;
+
+  const orders = data?.response?.items;
+
+  const updatedCarriers = carriers.map((carrier) => {
+    const currentOrder = orders?.find(
+      (order: any) => order.assigned === carrier.id
+    );
+
+    return {
+      ...carrier,
+      currentOrder: currentOrder?.id,
+    };
+  });
+
   return (
     <div className="mt-8 flow-root">
       <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -40,19 +61,19 @@ const CarriersTable = ({ carriers }: { carriers: Carrier[] }) => {
                   >
                     Completed
                   </th>
-                  <th
+                  {/* <th
                     scope="col"
                     className="px-3 py-3.5 text-left text-sm font-semibold text-blue-400"
                   >
                     Address
-                  </th>
+                  </th> */}
                   <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
                     <span className="sr-only">Select</span>
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#121212] bg-transparent">
-                {carriers.map((carrier, index) => (
+                {updatedCarriers.map((carrier, index) => (
                   <tr
                     className={cn("", {
                       "bg-[#121212] bg-opacity-75": index % 2 !== 0,
@@ -67,7 +88,7 @@ const CarriersTable = ({ carriers }: { carriers: Carrier[] }) => {
                       {carrier.name}
                     </td>
                     <td className="whitespace-nowrap py-4 pl-3 pr-3 text-sm text-white/40  sm:pl-3">
-                      <span
+                      {/* <span
                         className={cn(
                           "inline-flex items-center rounded-md bg-green-400 px-2 py-1 text-xs font-medium text-green-800 ring-1 ring-inset ring-green-600/20 w-20 h-6 justify-center",
                           {
@@ -82,7 +103,22 @@ const CarriersTable = ({ carriers }: { carriers: Carrier[] }) => {
                       >
                         {carrier.status.charAt(0).toUpperCase() +
                           carrier.status.slice(1)}
-                      </span>
+                      </span> */}
+                      {
+                        <Badge
+                          variant="light"
+                          color={
+                            carrier.status === "available"
+                              ? "green"
+                              : carrier.status === "out"
+                              ? "blue"
+                              : "gray"
+                          }
+                        >
+                          {carrier.status.charAt(0).toUpperCase() +
+                            carrier.status.slice(1)}
+                        </Badge>
+                      }
                     </td>
                     <td className="whitespace-nowrap px-3 py-4 text-sm text-white/40">
                       {carrier.completedorders}
@@ -90,20 +126,24 @@ const CarriersTable = ({ carriers }: { carriers: Carrier[] }) => {
                     <td
                       className={cn(
                         index === 0 ? "" : "border-t border-transparent",
-                        "relative py-3.5 pl-3 pr-4 text-right text-sm font-medium sm:pr-6"
+                        "relative py-3.5 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 flex flex-row justify-start"
                       )}
                     >
-                      <button
-                        type="button"
-                        className="inline-flex items-center rounded-md bg-blue-500 px-2.5 py-1.5 text-sm font-semibold text-blue-300 shadow-sm ring-1 ring-inset  hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-30"
-                        disabled={carrier.status !== "out"}
-                      >
-                        Track
-                        {/* <span className="sr-only">, {plan.name}</span> */}
-                      </button>
-                      {index !== 0 ? (
-                        <div className="absolute -top-px left-0 right-6 h-px bg-[#121212]" />
+                      {carrier.currentOrder ? (
+                        <Link
+                          type="button"
+                          className="inline-flex items-center rounded-md bg-blue-500 px-2.5 py-1.5 text-sm font-semibold text-blue-300 shadow-sm ring-1 ring-inset  hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-30 w-32"
+                          href={`/delivery/${carrier.currentOrder}` || ""}
+                        >
+                          {carrier.status === "available"
+                            ? "Last Order"
+                            : "Current Order"}
+                          {/* <span className="sr-only">, {plan.name}</span> */}
+                        </Link>
                       ) : null}
+                      {/* {index !== 0 ? (
+                        <div className="absolute -top-px left-0 right-6 h-px bg-[#121212]" />
+                      ) : null} */}
                     </td>
                   </tr>
                 ))}
