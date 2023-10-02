@@ -137,23 +137,6 @@ const Navigation = ({ setCollapsed, collapsed, isSmallScreen }: Props) => {
         </div>
       </div>
       <div className={cn(collapsed ? "w-[96px]" : "w-64", "space-y-2")}>
-        {!collapsed ? (
-          <div className="flex flex-col gap-4 px-4 py-5 text-[#C2C2C2]">
-            <div className="flex cursor-pointer items-center  gap-2 px-2 text-xs  font-light hover:text-white">
-              <PlusIcon className="h-4 w-4 stroke-2 " />
-              <p>Invite People</p>
-            </div>
-            <div className="flex cursor-pointer items-center gap-2 px-2 text-xs  font-light hover:text-white">
-              <HeartIcon className="h-4 w-4 stroke-2 " />
-              <p>Help & Support</p>
-            </div>
-          </div>
-        ) : (
-          <div className="flex items-center justify-center p-4">
-            <BellAlertIcon className="h-6 w-6 text-[#5C6570]" />
-          </div>
-        )}
-
         <div
           className={`flex h-auto w-full flex-row items-center justify-between gap-3  border-t-2 border-[#121212] p-5  py-6
        `}

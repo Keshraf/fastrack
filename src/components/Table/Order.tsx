@@ -1,4 +1,9 @@
+import useGetOrders from "@/hooks/useGetOrders";
 import { cn } from "@/utils/cn";
+import LoadingPage from "../Loading";
+import useGetItems from "@/hooks/useGetItems";
+import { Badge } from "@mantine/core";
+import Link from "next/link";
 
 export type Order = {
   orderId: string;
@@ -131,6 +136,24 @@ const orders: Order[] = [
 ];
 
 const OrderTable = () => {
+  const { data, isLoading, isError } = useGetOrders();
+  const {
+    data: itemdata,
+    isLoading: isLoadingItems,
+    isError: isErrorItems,
+  } = useGetItems();
+
+  if (isLoading || isLoadingItems) return <LoadingPage />;
+
+  const orders = data?.response?.items;
+  const items = itemdata?.response?.items;
+  const updatedOrders = orders?.map((order: any) => {
+    return {
+      firstItem: items?.find((item: any) => item.id === order.items[0])?.name,
+      ...order,
+    };
+  });
+
   return (
     <div className="mt-8 flow-root">
       <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -184,22 +207,34 @@ const OrderTable = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#121212] bg-transparent">
-                {orders.map((order, index) => (
+                {updatedOrders.map((order: any, index: number) => (
                   <tr
                     className={cn("", {
                       "bg-[#121212] bg-opacity-75": index % 2 !== 0,
                       "bg-[#0D0D0D]": index % 2 !== 0,
                     })}
-                    key={order.orderId}
+                    key={order.id}
                   >
-                    <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-white/60 sm:pl-6">
-                      {order.orderId}
+                    <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-blue-500 sm:pl-6 font-black">
+                      <Link href={`/delivery/${order.id}`}>{order.id}</Link>
                     </td>
                     <td className="whitespace-nowrap py-4 pl-3 pr-3 text-sm text-white/40  sm:pl-3">
-                      {order.items[0]}
+                      {order.firstItem} + {order.items.length - 1}
                     </td>
                     <td className="whitespace-nowrap px-3 py-4 text-sm text-white/40">
-                      {order.status}
+                      <Badge
+                        variant="light"
+                        color={
+                          order.status === "pending"
+                            ? "gray"
+                            : order.status === "in-progress"
+                            ? "blue"
+                            : "green"
+                        }
+                      >
+                        {order.status.charAt(0).toUpperCase() +
+                          order.status.slice(1)}
+                      </Badge>
                     </td>
                     <td className="whitespace-nowrap px-3 py-4 text-sm text-white/40">
                       ${order.amount}
@@ -208,10 +243,12 @@ const OrderTable = () => {
                       {order.assigned}
                     </td>
                     <td className="whitespace-nowrap px-3 py-4 text-sm text-white/40">
-                      {order.timestamp}
+                      {order.created_at}
                     </td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-white/40">
-                      {order.address}
+                    <td className="whitespace-nowrap px-3 py-4 text-sm text-blue-300 underline decoration-blue-600">
+                      <Link href={order.map || ""}>
+                        {order.customer_address.slice(0, 20).concat("...")}
+                      </Link>
                     </td>
                   </tr>
                 ))}
